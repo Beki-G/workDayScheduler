@@ -3,8 +3,6 @@ $(document).ready(function(){
     let hour, task, taskDescription;
     
     $("#currentDay").text(currentDate);
-    //how to get current hour
-    //console.log(moment().format("ddd, hA"));
     
     function saveTask(task, hour){
         let taskLog=[];
@@ -12,15 +10,11 @@ $(document).ready(function(){
         let jsonStr;
         let isRewriteTask =false;
 
-        //console.log(currentTask)
-
         if ("tasks" in localStorage){
             jsonStr = localStorage.getItem("tasks");
             taskLog = JSON.parse(jsonStr);
-            //console.log(taskLog)
             
             for(const timeSlot in taskLog){
-                //console.log(taskLog[timeSlot].time)
                 
                 if(taskLog[timeSlot].time === hour){
                     taskLog[timeSlot].toDo = task;
@@ -43,6 +37,35 @@ $(document).ready(function(){
     } 
     
     function loadTasks(){
+        $(".time-block").each(function(){
+            let pastNoon, time;
+            hour = $(this).children(".hour");
+            hour = hour.text();
+            time = hour.substring(0,2);
+            time = parseInt(time);
+            
+            pastNoon= hour.substring(6,8);
+
+            if(pastNoon==="PM"&& time !=12){
+                time+=12;
+            }
+
+            let currentHour = moment().hour();
+
+            if(time<currentHour){
+                $(this).addClass("past");
+            }
+
+            if(time===currentHour){
+                $(this).addClass("present");
+            }
+
+            if(time>currentHour){
+                $(this).addClass("future");
+            }
+        })
+
+
         if("tasks" in localStorage){
             let taskLog = localStorage.getItem("tasks");
             let toDoTask;
@@ -56,7 +79,6 @@ $(document).ready(function(){
                         taskDescription = $(this).children(".description")
                         toDoTask= taskLog[timeSlot].toDo;
                         taskDescription.text(toDoTask)
-                        //console.log("found a match in "+ hour)
                     }
                 }
             })
@@ -76,5 +98,3 @@ $(document).ready(function(){
 
     loadTasks();
 })
-
-
