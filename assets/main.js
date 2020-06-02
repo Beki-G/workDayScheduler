@@ -60,6 +60,7 @@ function loadTasks() {
     taskLog = JSON.parse(taskLog);
     $(".time-block").each(function () {
       let hour = $(this).children(".hour").text();
+      console.log("Here is hour: "+ hour);
       for (const timeSlot in taskLog) {
         if (hour === taskLog[timeSlot].time) {
           const taskDescription = $(this).children(".description");
