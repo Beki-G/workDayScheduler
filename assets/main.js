@@ -1,4 +1,3 @@
-$(document).ready(function(){
     const currentDate = moment().format("dddd, MMMM Do");
     let hour, task, taskDescription;
     
@@ -35,16 +34,20 @@ $(document).ready(function(){
         }
 
     } 
-    
-    function loadTasks(){
+
+    function hourChecker(){
+        console.log("15 min mark")
         $(".time-block").each(function(){
-            let pastNoon, time;
-            hour = $(this).children(".hour");
-            hour = hour.text();
-            time = hour.substring(0,2);
-            time = parseInt(time);
+            $(".container>row.past").removeClass("past");
+            $(".container>row.present").removeClass("present");
+            $(".container>row.future").removeClass("future");
             
-            pastNoon= hour.substring(6,8);
+            hour = $(this).children(".hour").text();
+            // hour = hour.text();
+            let timeStr = hour.substring(0,2);
+            let time = parseInt(timeStr);
+            
+            const pastNoon= hour.substring(6,8);
 
             if(pastNoon==="PM"&& time !=12){
                 time+=12;
@@ -54,30 +57,29 @@ $(document).ready(function(){
 
             if(time<currentHour){
                 $(this).addClass("past");
-            }
-
-            if(time===currentHour){
+            }else if(time===currentHour){
                 $(this).addClass("present");
-            }
-
-            if(time>currentHour){
+            }else{
                 $(this).addClass("future");
             }
         })
 
 
+    }
+    
+    function loadTasks(){
+        hourChecker();
+
         if("tasks" in localStorage){
             let taskLog = localStorage.getItem("tasks");
-            let toDoTask;
             taskLog = JSON.parse(taskLog);
             $(".time-block").each(function(){
-                hour = $(this).children(".hour");
-                hour = hour.text();
-
+                hour = $(this).children(".hour").text();
+                
                 for(const timeSlot in taskLog){
                     if(hour === taskLog[timeSlot].time){
                         taskDescription = $(this).children(".description")
-                        toDoTask= taskLog[timeSlot].toDo;
+                        let toDoTask= taskLog[timeSlot].toDo;
                         taskDescription.text(toDoTask)
                     }
                 }
@@ -97,4 +99,5 @@ $(document).ready(function(){
     })
 
     loadTasks();
-})
+
+    let timerCheck = setInterval(hourChecker, 900000);
