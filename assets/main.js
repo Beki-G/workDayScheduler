@@ -1,9 +1,10 @@
     const currentDate = moment().format("dddd, MMMM Do");
-    let hour, task, taskDescription;
     
     $("#currentDay").text(currentDate);
     
     function saveTask(task, hour){
+        hourChecker();
+
         let taskLog=[];
         let currentTask={time: hour, toDo:task};
         let jsonStr;
@@ -36,25 +37,29 @@
     } 
 
     function hourChecker(){
-        console.log("15 min mark")
+
+        // remove current classes if they have been applied
         $(".time-block").each(function(){
             $(".container>row.past").removeClass("past");
             $(".container>row.present").removeClass("present");
             $(".container>row.future").removeClass("future");
             
-            hour = $(this).children(".hour").text();
-            // hour = hour.text();
+            //get time block text and retrive numerical value
+            const hour = $(this).children(".hour").text();
             let timeStr = hour.substring(0,2);
             let time = parseInt(timeStr);
             
+            //get if it is AM or PM
             const pastNoon= hour.substring(6,8);
 
+            //if it is AM or PM add 12 to the count
             if(pastNoon==="PM"&& time !=12){
                 time+=12;
             }
 
             let currentHour = moment().hour();
 
+            //add appropriate classes based on time
             if(time<currentHour){
                 $(this).addClass("past");
             }else if(time===currentHour){
@@ -74,7 +79,7 @@
             let taskLog = localStorage.getItem("tasks");
             taskLog = JSON.parse(taskLog);
             $(".time-block").each(function(){
-                hour = $(this).children(".hour").text();
+                let hour = $(this).children(".hour").text();
                 
                 for(const timeSlot in taskLog){
                     if(hour === taskLog[timeSlot].time){
@@ -132,19 +137,16 @@
         }
     }
 
-    $(".saveBtn").click(function(){
-        hour = $(this).siblings(".hour");
-        hour = hour.text();
-
-        taskDescription= $(this).siblings(".description");
-        task = taskDescription.val();
-
-        //console.log("You've said "+task+" for "+hour);
-        saveTask(task, hour);
-    })
-
     createTimeBlocks();
 
     loadTasks();
 
     let timerCheck = setInterval(hourChecker, 900000);
+
+    $(".saveBtn").click(function(){
+        let hour = $(this).siblings(".hour").text();
+
+        let task= $(this).siblings(".description").val();
+
+        saveTask(task, hour);
+    })
