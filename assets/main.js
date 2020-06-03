@@ -87,6 +87,51 @@
         }
     }
 
+    function leadingZero(num){
+        if (num < 10 && num >= 0)
+            return '0' + num;
+        else
+            return num;
+    }
+
+    function createTimeBlocks(){
+        //wrkDay is the first hour that work starts & how long the work day is in hours
+        let wrkDay = [8,10]
+
+        for(let i = 0; i<wrkDay[1]; i++){
+            let wrkHour = i+wrkDay[0]
+            let timeDisplayed = `${leadingZero(wrkHour)}:00`;
+
+            if (wrkHour<=11){
+                timeDisplayed += " AM"
+            }else if(wrkHour>=13){
+                timeDisplayed = `${leadingZero((wrkHour-12))}:00 PM`
+            } else{
+                timeDisplayed += " PM"
+            }
+            
+            let divTimeBlock = $("<div></div>");
+            divTimeBlock.addClass("row time-block");
+
+            let divHour = $("<div></div>");
+            divHour.addClass("col-2 hour");
+            divHour.text(timeDisplayed)
+            
+            let textArea = $("<textarea></textarea>");
+            textArea.addClass("col-8 description");
+
+            let button = $("<button></button>");
+            button.addClass("col-2 fas fa-save saveBtn");
+
+
+            divTimeBlock.append(divHour);
+            divTimeBlock.append(textArea);
+            divTimeBlock.append(button);
+
+            $(".container").append(divTimeBlock);
+        }
+    }
+
     $(".saveBtn").click(function(){
         hour = $(this).siblings(".hour");
         hour = hour.text();
@@ -97,6 +142,8 @@
         //console.log("You've said "+task+" for "+hour);
         saveTask(task, hour);
     })
+
+    createTimeBlocks();
 
     loadTasks();
 
